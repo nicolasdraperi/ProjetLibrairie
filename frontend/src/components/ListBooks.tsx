@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 interface Book {
     _id: string;
@@ -62,40 +63,85 @@ const Home = () => {
     };
 
     return (
-        <div>
-            <h1>Liste des Livres</h1>
-            <table border={1}>
-                <thead>
-                <tr>
-                    <th>Titre</th>
-                    <th>Auteur</th>
-                    <th>ISBN</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {books.map((book) => (
-                    <tr key={book._id}>
-                        <td>{book.titre}</td>
-                        <td>{book.auteur}</td>
-                        <td>{book.ISBN}</td>
-                        <td>
-                            <button onClick={() => startEditing(book)}>Modifier</button>
-                            <button onClick={() => deleteBook(book._id)}>Supprimer</button>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+        <div className="container mt-5">
+            <div className="text-center mb-4">
+                <h1 className="fw-bold">📚 Liste des Livres</h1>
+            </div>
+
+            <div className="d-flex justify-content-center mb-4">
+                <Link to="/add" className="btn btn-success btn-lg">➕ Ajouter un Livre</Link>
+            </div>
+
+            <div className="d-flex justify-content-center">
+                <div className="table-responsive">
+                    <table className="table table-striped table-bordered shadow-lg rounded text-center">
+                        <thead className="table-dark">
+                        <tr>
+                            <th>Titre</th>
+                            <th>Auteur</th>
+                            <th>ISBN</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {books.map((book) => (
+                            <tr key={book._id}>
+                                <td>{book.titre}</td>
+                                <td>{book.auteur}</td>
+                                <td>{book.ISBN}</td>
+                                <td>
+                                    <button className="btn btn-warning btn-sm me-2" onClick={() => startEditing(book)}>✏️ Modifier</button>
+                                    <button className="btn btn-danger btn-sm" onClick={() => deleteBook(book._id)}>🗑️ Supprimer</button>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             {editingBook && (
-                <div>
-                    <h2>Modifier le livre</h2>
-                    <input type="text" name="titre" value={formData.titre} onChange={handleChange} placeholder="Titre" />
-                    <input type="text" name="auteur" value={formData.auteur} onChange={handleChange} placeholder="Auteur" />
-                    <input type="text" name="ISBN" value={formData.ISBN} onChange={handleChange} placeholder="ISBN" />
-                    <button onClick={updateBook}>Enregistrer</button>
-                    <button onClick={() => setEditingBook(null)}>Annuler</button>
+                <div className="d-flex justify-content-center mt-4">
+                    <div className="card shadow-lg p-4 w-50">
+                        <h2 className="text-center">✏️ Modifier le Livre</h2>
+                        <div className="mb-3">
+                            <label className="form-label">Titre</label>
+                            <input
+                                type="text"
+                                name="titre"
+                                className="form-control"
+                                value={formData.titre}
+                                onChange={handleChange}
+                                placeholder="Titre du livre"
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label">Auteur</label>
+                            <input
+                                type="text"
+                                name="auteur"
+                                className="form-control"
+                                value={formData.auteur}
+                                onChange={handleChange}
+                                placeholder="Nom de l'auteur"
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label">ISBN</label>
+                            <input
+                                type="text"
+                                name="ISBN"
+                                className="form-control"
+                                value={formData.ISBN}
+                                onChange={handleChange}
+                                placeholder="Numéro ISBN"
+                            />
+                        </div>
+                        <div className="d-flex justify-content-between">
+                            <button className="btn btn-primary" onClick={updateBook}>✅ Enregistrer</button>
+                            <button className="btn btn-secondary" onClick={() => setEditingBook(null)}>❌ Annuler</button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
