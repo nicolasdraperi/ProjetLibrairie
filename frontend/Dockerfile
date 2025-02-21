@@ -1,29 +1,36 @@
-# Utiliser une image Node.js légère pour la build
-FROM node:18-alpine AS build
+### Dockerfile pour le frontend (React + Vite + Bootstrap)
+# Étape 1 : Construction du projet avec Node.js
+FROM node:18-alpine AS builder
 
-# Définir le répertoire de travail
+# Définition du répertoire de travail
 WORKDIR /app
 
-# Copier les fichiers package.json et package-lock.json pour installer les dépendances
+# Copier uniquement les fichiers nécessaires pour l'installation des dépendances
 COPY package.json package-lock.json ./
 
-# Installer les dépendances
+# Installation des dépendances
 RUN npm ci
 
-# Copier le reste des fichiers du frontend
+# Copier le reste du projet
 COPY . .
 
-# Construire l'application React
+# Build du projet React avec Vite
 RUN npm run build
 
-# Utiliser une image nginx pour servir l'application
+# Étape 2 : Utilisation de Nginx pour servir les fichiers statiques
 FROM nginx:alpine
 
-# Copier le build du frontend dans nginx
-COPY --from=build /app/build /usr/share/nginx/html
+# Suppression de la configuration par défaut de Nginx
+RUN rm -rf /etc/nginx/conf.d/default.conf
 
-# Exposer le port 3000
-EXPOSE 3000
+# Ajout de notre propre configuration Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copier les fichiers build de React dans le serveur Nginx
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Exposer le port 80
+EXPOSE 80
 
 # Démarrer Nginx
 CMD ["nginx", "-g", "daemon off;"]
